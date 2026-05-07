@@ -13,10 +13,14 @@ logger.Info("Program started");
 
 do
 {
-    Console.WriteLine("1) Display categories");
-    Console.WriteLine("2) Add category");
-    Console.WriteLine("3) Display Category and related products");
-    Console.WriteLine("4) Display all Categories and their related products");
+    Console.WriteLine("1) Display All Products");
+    Console.WriteLine("2) Display Specific Product");
+    Console.WriteLine("3) Add a Product");
+    Console.WriteLine("4) Edit a Product");
+    Console.WriteLine("5) Display categories");
+    Console.WriteLine("6) Add category");
+    Console.WriteLine("7) Display Category and related products");
+    Console.WriteLine("8) Display all Categories and their related products");
     Console.WriteLine("Enter to quit");
     string? choice = Console.ReadLine();
     Console.Clear();
