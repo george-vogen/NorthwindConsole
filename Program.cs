@@ -28,6 +28,26 @@ do
 
     if (choice == "1")
     {
+        // Display All Products
+
+    }
+    else if (choice == "2")
+    {
+        // Display Specific Product
+
+    }
+    else if (choice == "3")
+    {
+        // Add a Product
+
+    }
+    else if (choice == "4")
+    {
+        // Edit a Product
+        
+    }
+    else if (choice == "5")
+    {
         // display categories
         var configuration = new ConfigurationBuilder()
             .AddJsonFile($"appsettings.json");
@@ -46,7 +66,7 @@ do
         }
         Console.ForegroundColor = ConsoleColor.White;
     }
-    else if (choice == "2")
+    else if (choice == "6")
     {
         // Add category
         Category category = new();
@@ -82,8 +102,9 @@ do
             }
         }
     }
-    else if (choice == "3")
+    else if (choice == "7")
     {
+        // Display Category and related products
         var db = new DataContext();
         var query = db.Categories.OrderBy(p => p.CategoryId);
 
@@ -104,8 +125,9 @@ do
             Console.WriteLine($"\t{p.ProductName}");
         }
     }
-    else if (choice == "4")
+    else if (choice == "8")
     {
+        // Display all Categories and their related products
         var db = new DataContext();
         var query = db.Categories.Include("Products").OrderBy(p => p.CategoryId);
         foreach (var item in query)
