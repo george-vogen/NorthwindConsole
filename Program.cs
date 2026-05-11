@@ -29,7 +29,38 @@ do
     if (choice == "1")
     {
         // Display All Products
+        var db = new DataContext();
 
+        Console.WriteLine("Show products:");
+        Console.WriteLine("1) All");
+        Console.WriteLine("2) Active only");
+        Console.WriteLine("3) Discontinued only");
+        string? filterChoice = Console.ReadLine();
+        Console.Clear();
+        logger.Info("Option {filterChoice} selected", filterChoice);
+
+        var query = db.Products.OrderBy(p => p.ProductName);
+
+        switch (filterChoice)
+        {
+            case "2":
+                query = query.Where(p => p.Discontinued == false).OrderBy(p => p.ProductName);
+                break;
+            case "3":
+                query = query.Where(p => p.Discontinued == true).OrderBy(p => p.ProductName);
+                break;
+        }
+
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine($"{query.Count()} records returned");
+        Console.ForegroundColor = ConsoleColor.Magenta;
+        
+        foreach (var item in query)
+        {
+            Console.WriteLine($"{item.ProductName} - {(item.Discontinued ? "Discontinued" : "Active")}");
+        }
+
+        Console.ForegroundColor = ConsoleColor.White;
     }
     else if (choice == "2")
     {
