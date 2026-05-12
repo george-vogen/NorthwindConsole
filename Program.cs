@@ -213,7 +213,201 @@ do
     else if (choice == "4")
     {
         // Edit a Product
+        var db = new DataContext();
+        var query = db.Products.OrderBy(p => p.ProductId);
+
+        Console.WriteLine("Select the product that you would like to edit:");
+        Console.ForegroundColor = ConsoleColor.DarkRed;
+        foreach (var item in query)
+        {
+            Console.WriteLine($"{item.ProductId}) {item.ProductName}");
+        }
+        Console.ForegroundColor = ConsoleColor.White;
+        int id = int.Parse(Console.ReadLine()!);
+        Console.Clear();
+        logger.Info($"ProductId {id} selected");
+
+        Product? product = null;
+
+        product = db.Products.Include("Category").Include("Supplier").FirstOrDefault(p => p.ProductId == id);
         
+        if (product != null)
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"Product ID: {product.ProductId}");
+            Console.WriteLine($"Product Name: {product.ProductName}");
+            Console.WriteLine($"Category: {product.Category?.CategoryName ?? "N/A"}");
+            Console.WriteLine($"Supplier: {product.Supplier?.CompanyName ?? "N/A"}");
+            Console.WriteLine($"Quantity Per Unit: {product.QuantityPerUnit ?? "N/A"}");
+            Console.WriteLine($"Unit Price: ${product.UnitPrice:F2}");
+            Console.WriteLine($"Units In Stock: {product.UnitsInStock}");
+            Console.WriteLine($"Units On Order: {product.UnitsOnOrder}");
+            Console.WriteLine($"Reorder Level: {product.ReorderLevel}");
+            Console.WriteLine($"Discontinued: {(product.Discontinued ? "YES" : "NO")}");
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+        else
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Product not found.");
+            Console.ForegroundColor = ConsoleColor.White;
+            continue;
+        }
+
+        string productName;
+        while (true)
+        {
+            Console.WriteLine("Enter new product name (or press Enter to keep current):");
+            productName = Console.ReadLine()!;
+
+            if (string.IsNullOrWhiteSpace(productName))
+            {
+                productName = product.ProductName;
+                break;
+            }
+
+            if (db.Products.Any(p => p.ProductName == productName && p.ProductId != product.ProductId))
+            {
+                Console.WriteLine("A product with that name already exists. Enter a different product name.");
+                continue;
+            }
+
+            break;
+        }
+        product.ProductName = productName;
+
+        var categories = db.Categories.OrderBy(c => c.CategoryId).ToList();
+        Console.WriteLine("Available categories:");
+        foreach (var category in categories)
+        {
+            Console.WriteLine($"{category.CategoryId}) {category.CategoryName}");
+        }
+
+        int categoryId;
+        while (true)
+        {
+            Console.WriteLine("Enter new Category ID (or press Enter to keep current):");
+            string input = Console.ReadLine()!;
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                categoryId = product.CategoryId ?? 0;
+                break;
+            }
+
+            if (int.TryParse(input, out categoryId) && categories.Any(c => c.CategoryId == categoryId))
+            {
+                product.CategoryId = categoryId;
+                break;
+            }
+            Console.WriteLine("Invalid Category ID. Please enter one of the IDs shown above or press Enter to keep current.");
+        }
+
+        var suppliers = db.Suppliers.OrderBy(s => s.SupplierId).ToList();
+        Console.WriteLine("Available suppliers:");
+        foreach (var supplier in suppliers)
+        {
+            Console.WriteLine($"{supplier.SupplierId}) {supplier.CompanyName}");
+        }
+
+        int supplierId;
+        while (true)
+        {
+            Console.WriteLine("Enter new Supplier ID (or press Enter to keep current):");
+            string input = Console.ReadLine()!;
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                supplierId = product.SupplierId ?? 0;
+                break;
+            }
+
+            if (int.TryParse(input, out supplierId) && suppliers.Any(s => s.SupplierId == supplierId))
+            {
+                product.SupplierId = supplierId;
+                break;
+            }
+            Console.WriteLine("Invalid Supplier ID. Please enter one of the IDs shown above or press Enter to keep current.");
+        }
+
+        string quantityPerUnit;
+        while (true)
+        {
+            Console.WriteLine("Enter new quantity per unit (or press Enter to keep current):");
+            quantityPerUnit = Console.ReadLine()!;
+            if (string.IsNullOrWhiteSpace(quantityPerUnit))
+            {
+                quantityPerUnit = product.QuantityPerUnit ?? "";
+                break;
+            }
+            break;
+        }
+        product.QuantityPerUnit = quantityPerUnit;
+
+        decimal unitPrice;
+        while (true)
+        {
+            Console.WriteLine("Enter new unit price (or press Enter to keep current):");
+            string input = Console.ReadLine()!;
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                unitPrice = product.UnitPrice ?? 0;
+                break;
+            }
+
+            if (decimal.TryParse(input, out unitPrice))
+            {
+                product.UnitPrice = unitPrice;
+                break;
+            }
+            Console.WriteLine("Invalid unit price. Please enter a decimal number or press Enter to keep current.");
+        }
+
+        short unitsInStock;
+        while (true)
+        {
+            Console.WriteLine("Enter new units in stock (or press Enter to keep current):");
+            string input = Console.ReadLine()!;
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                unitsInStock = product.UnitsInStock ?? 0;
+                break;
+            }
+
+            if (short.TryParse(input, out unitsInStock))
+            {
+                product.UnitsInStock = unitsInStock;
+                break;
+            }
+            Console.WriteLine("Invalid units in stock. Please enter a number or press Enter to keep current.");
+        }
+
+        bool discontinued;
+        while (true)
+        {
+            Console.WriteLine("Is the product discontinued? (y/n or press Enter to keep current):");
+            string input = Console.ReadLine()!;
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                discontinued = product.Discontinued;
+                break;
+            }
+
+            if (input.ToLower() == "y" || input.ToLower() == "yes")
+            {
+                discontinued = true;
+                break;
+            }
+            else if (input.ToLower() == "n" || input.ToLower() == "no")
+            {
+                discontinued = false;
+                break;
+            }
+            Console.WriteLine("Please enter 'y' or 'n' or press Enter to keep current.");
+        }
+        product.Discontinued = discontinued;
+
+        db.SaveChanges();
+
+        Console.WriteLine("Product updated successfully.");
     }
     else if (choice == "5")
     {
