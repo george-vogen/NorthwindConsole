@@ -454,7 +454,8 @@ do
             else
             {
                 logger.Info("Validation passed");
-                // TODO: save category to db
+                db.AddCategory(category);
+                Console.WriteLine("Category added successfully.");
             }
         }
         if (!isValid)

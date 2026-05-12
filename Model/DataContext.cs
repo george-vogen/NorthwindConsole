@@ -37,6 +37,12 @@ public partial class DataContext : DbContext
         this.SaveChanges();
     }
 
+    public void AddCategory(Category category)
+    {
+        this.Categories.Add(category);
+        this.SaveChanges();
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Category>(entity =>
