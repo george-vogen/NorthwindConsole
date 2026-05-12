@@ -21,6 +21,7 @@ do
     Console.WriteLine("6) Add category");
     Console.WriteLine("7) Display Category and related products");
     Console.WriteLine("8) Display all Categories and their related products");
+    Console.WriteLine("9) Edit a Category");
     Console.WriteLine("Enter to quit");
     string? choice = Console.ReadLine();
     Console.Clear();
@@ -502,6 +503,11 @@ do
                 Console.WriteLine($"\t{p.ProductName}");
             }
         }
+    }
+    else if (choice == "9")
+    {
+        // Edit a Category
+
     }
     else if (String.IsNullOrEmpty(choice))
     {
