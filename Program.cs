@@ -507,7 +507,88 @@ do
     else if (choice == "9")
     {
         // Edit a Category
+        var db = new DataContext();
+        var categories = db.Categories.OrderBy(c => c.CategoryId).ToList();
 
+        Console.WriteLine("Select the category that you would like to edit:");
+        Console.ForegroundColor = ConsoleColor.DarkRed;
+        foreach (var category in categories)
+        {
+            Console.WriteLine($"{category.CategoryId}) {category.CategoryName}");
+        }
+        Console.ForegroundColor = ConsoleColor.White;
+
+        int id;
+        Category? selectedCategory = null;
+        while (true)
+        {
+            Console.WriteLine("Enter a valid Category ID:");
+            string? input = Console.ReadLine();
+            if (!int.TryParse(input, out id))
+            {
+                Console.WriteLine("Invalid input. Please enter a number.");
+                continue;
+            }
+
+            selectedCategory = db.Categories.FirstOrDefault(c => c.CategoryId == id);
+            if (selectedCategory == null)
+            {
+                Console.WriteLine("No category found with that ID. Please choose an ID from the list.");
+                continue;
+            }
+
+            break;
+        }
+
+        Console.Clear();
+        logger.Info($"CategoryId {id} selected");
+
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine("Current category details:");
+        Console.WriteLine($"Category ID: {selectedCategory.CategoryId}");
+        Console.WriteLine($"Category Name: {selectedCategory.CategoryName}");
+        Console.WriteLine($"Description: {selectedCategory.Description}");
+        Console.ForegroundColor = ConsoleColor.White;
+
+        string categoryName;
+        while (true)
+        {
+            Console.WriteLine("Enter new category name (or press Enter to keep current):");
+            categoryName = Console.ReadLine()!;
+
+            if (string.IsNullOrWhiteSpace(categoryName))
+            {
+                categoryName = selectedCategory.CategoryName;
+                break;
+            }
+
+            if (db.Categories.Any(c => c.CategoryName == categoryName && c.CategoryId != selectedCategory.CategoryId))
+            {
+                Console.WriteLine("A category with that name already exists. Enter a different category name.");
+                continue;
+            }
+
+            break;
+        }
+        selectedCategory.CategoryName = categoryName;
+
+        string description;
+        while (true)
+        {
+            Console.WriteLine("Enter new description (or press Enter to keep current):");
+            description = Console.ReadLine()!;
+            if (string.IsNullOrWhiteSpace(description))
+            {
+                description = selectedCategory.Description ?? "";
+                break;
+            }
+            break;
+        }
+        selectedCategory.Description = description;
+
+        db.SaveChanges();
+
+        Console.WriteLine("Category updated successfully.");
     }
     else if (String.IsNullOrEmpty(choice))
     {
