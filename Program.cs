@@ -108,7 +108,107 @@ do
     else if (choice == "3")
     {
         // Add a Product
+        var db = new DataContext();
 
+        var product = new Product();
+
+        string productName;
+        while (true)
+        {
+            Console.WriteLine("Enter product name:");
+            productName = Console.ReadLine()!;
+
+            if (string.IsNullOrWhiteSpace(productName))
+            {
+                Console.WriteLine("Product name is required.");
+                continue;
+            }
+
+            if (db.Products.Any(p => p.ProductName == productName))
+            {
+                Console.WriteLine("A product with that name already exists. Enter a different product name.");
+                continue;
+            }
+
+            break;
+        }
+        product.ProductName = productName;
+
+        var categories = db.Categories.OrderBy(c => c.CategoryId).ToList();
+        Console.WriteLine("Available categories:");
+        foreach (var category in categories)
+        {
+            Console.WriteLine($"{category.CategoryId}) {category.CategoryName}");
+        }
+
+        int categoryId;
+        while (true)
+        {
+            Console.WriteLine("Enter Category ID:");
+            if (int.TryParse(Console.ReadLine(), out categoryId) && categories.Any(c => c.CategoryId == categoryId))
+            {
+                product.CategoryId = categoryId;
+                break;
+            }
+            Console.WriteLine("Invalid Category ID. Please enter one of the IDs shown above.");
+        }
+
+        var suppliers = db.Suppliers.OrderBy(s => s.SupplierId).ToList();
+        Console.WriteLine("Available suppliers:");
+        foreach (var supplier in suppliers)
+        {
+            Console.WriteLine($"{supplier.SupplierId}) {supplier.CompanyName}");
+        }
+
+        int supplierId;
+        while (true)
+        {
+            Console.WriteLine("Enter Supplier ID:");
+            if (int.TryParse(Console.ReadLine(), out supplierId) && suppliers.Any(s => s.SupplierId == supplierId))
+            {
+                product.SupplierId = supplierId;
+                break;
+            }
+            Console.WriteLine("Invalid Supplier ID. Please enter one of the IDs shown above.");
+        }
+
+        string quantityPerUnit;
+        do
+        {
+            Console.WriteLine("Enter quantity per unit:");
+            quantityPerUnit = Console.ReadLine()!;
+        } while (string.IsNullOrWhiteSpace(quantityPerUnit));
+        product.QuantityPerUnit = quantityPerUnit;
+
+        decimal unitPrice;
+        while (true)
+        {
+            Console.WriteLine("Enter unit price:");
+            if (decimal.TryParse(Console.ReadLine(), out unitPrice))
+            {
+                product.UnitPrice = unitPrice;
+                break;
+            }
+            Console.WriteLine("Invalid unit price. Please enter a decimal number.");
+        }
+
+        short unitsInStock;
+        while (true)
+        {
+            Console.WriteLine("Enter units in stock:");
+            if (short.TryParse(Console.ReadLine(), out unitsInStock))
+            {
+                product.UnitsInStock = unitsInStock;
+                break;
+            }
+            Console.WriteLine("Invalid units in stock. Please enter a number.");
+        }
+
+        product.Discontinued = false;
+
+        db.AddProduct(product);
+
+        Console.WriteLine("Product added with ID: " + product.ProductId);
     }
     else if (choice == "4")
     {
