@@ -65,7 +65,45 @@ do
     else if (choice == "2")
     {
         // Display Specific Product
+        var db = new DataContext();
+        var query = db.Products.OrderBy(p => p.ProductId);
 
+        Console.WriteLine("Select the product that you would like to see:");
+        Console.ForegroundColor = ConsoleColor.DarkRed;
+        foreach (var item in query)
+        {
+            Console.WriteLine($"{item.ProductId}) {item.ProductName}");
+        }
+        Console.ForegroundColor = ConsoleColor.White;
+        int id = int.Parse(Console.ReadLine()!);
+        Console.Clear();
+        logger.Info($"ProductId {id} selected");
+
+        Product? product = null;
+
+        product = db.Products.Include("Category").Include("Supplier").FirstOrDefault(p => p.ProductId == id);
+        
+        if (product != null)
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"Product ID: {product.ProductId}");
+            Console.WriteLine($"Product Name: {product.ProductName}");
+            Console.WriteLine($"Category: {product.Category?.CategoryName ?? "N/A"}");
+            Console.WriteLine($"Supplier: {product.Supplier?.CompanyName ?? "N/A"}");
+            Console.WriteLine($"Quantity Per Unit: {product.QuantityPerUnit ?? "N/A"}");
+            Console.WriteLine($"Unit Price: ${product.UnitPrice:F2}");
+            Console.WriteLine($"Units In Stock: {product.UnitsInStock}");
+            Console.WriteLine($"Units On Order: {product.UnitsOnOrder}");
+            Console.WriteLine($"Reorder Level: {product.ReorderLevel}");
+            Console.WriteLine($"Discontinued: {(product.Discontinued ? "YES" : "NO")}");
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+        else
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Product not found.");
+            Console.ForegroundColor = ConsoleColor.White;
+        }
     }
     else if (choice == "3")
     {
